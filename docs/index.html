@@ -18,8 +18,8 @@
     </header>
 
     <section class="summary" aria-label="摘要">
-      <article><small>區間買進第一</small><strong id="buyLeader">—</strong><span id="buyLeaderFlow">—</span></article>
-      <article><small>區間賣出第一</small><strong id="sellLeader">—</strong><span id="sellLeaderFlow">—</span></article>
+      <article><small>區間淨買超第一</small><strong id="buyLeader">—</strong><span id="buyLeaderFlow">—</span></article>
+      <article><small>區間淨賣超第一</small><strong id="sellLeader">—</strong><span id="sellLeaderFlow">—</span></article>
       <article><small>觀察期庫存最高</small><strong id="inventoryLeader">—</strong><span id="inventoryLots">—</span></article>
     </section>
 
@@ -30,24 +30,24 @@
     <section class="split-rankings">
     <section class="panel buy-panel">
       <div class="panel-head">
-        <div><h2>買進排行榜</h2><p class="range-text">近 20 個交易日</p></div>
-        <div class="legend"><span class="buy">買進</span></div>
+        <div><h2>淨買超排行榜</h2><p class="range-text">近 20 個交易日</p></div>
+        <div class="legend"><span class="buy">買進減賣出</span></div>
       </div>
       <div class="table-wrap">
         <table class="rank-table">
-          <thead><tr><th>股票</th><th>買進張數</th><th>買進金額</th></tr></thead>
+          <thead><tr><th>股票</th><th>淨買張數</th><th>淨買金額</th></tr></thead>
           <tbody id="buyRows"><tr><td colspan="3" class="empty">資料讀取中</td></tr></tbody>
         </table>
       </div>
     </section>
     <section class="panel sell-panel">
       <div class="panel-head">
-        <div><h2>賣出排行榜</h2><p class="range-text">近 20 個交易日</p></div>
-        <div class="legend"><span class="sell">賣出</span></div>
+        <div><h2>淨賣超排行榜</h2><p class="range-text">近 20 個交易日</p></div>
+        <div class="legend"><span class="sell">賣出減買進</span></div>
       </div>
       <div class="table-wrap">
         <table class="rank-table">
-          <thead><tr><th>股票</th><th>賣出張數</th><th>賣出金額</th></tr></thead>
+          <thead><tr><th>股票</th><th>淨賣張數</th><th>淨賣金額</th></tr></thead>
           <tbody id="sellRows"><tr><td colspan="3" class="empty">資料讀取中</td></tr></tbody>
         </table>
       </div>
