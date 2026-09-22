@@ -18,24 +18,48 @@
     </header>
 
     <section class="summary" aria-label="摘要">
-      <article><small>20 日主要建倉</small><strong id="leader">—</strong><span id="leaderFlow">—</span></article>
+      <article><small>區間買進第一</small><strong id="buyLeader">—</strong><span id="buyLeaderFlow">—</span></article>
+      <article><small>區間賣出第一</small><strong id="sellLeader">—</strong><span id="sellLeaderFlow">—</span></article>
       <article><small>觀察期庫存最高</small><strong id="inventoryLeader">—</strong><span id="inventoryLots">—</span></article>
-      <article><small>固定觀察</small><strong>京元電・聯電・合晶</strong><span>已知正例，不作績效保證</span></article>
     </section>
 
     <nav class="windows" aria-label="統計期間">
       <button data-window="1">當日</button><button data-window="3">3 日</button><button data-window="5">5 日</button><button data-window="10">10 日</button><button class="active" data-window="20">20 日</button>
     </nav>
 
-    <section class="panel">
+    <section class="split-rankings">
+    <section class="panel buy-panel">
       <div class="panel-head">
-        <div><h2>資金流排行榜</h2><p id="rangeText">近 20 個交易日</p></div>
-        <div class="legend"><span class="buy">買超</span><span class="sell">賣超</span></div>
+        <div><h2>買進排行榜</h2><p class="range-text">近 20 個交易日</p></div>
+        <div class="legend"><span class="buy">買進</span></div>
       </div>
       <div class="table-wrap">
+        <table class="rank-table">
+          <thead><tr><th>股票</th><th>買進張數</th><th>買進金額</th></tr></thead>
+          <tbody id="buyRows"><tr><td colspan="3" class="empty">資料讀取中</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel sell-panel">
+      <div class="panel-head">
+        <div><h2>賣出排行榜</h2><p class="range-text">近 20 個交易日</p></div>
+        <div class="legend"><span class="sell">賣出</span></div>
+      </div>
+      <div class="table-wrap">
+        <table class="rank-table">
+          <thead><tr><th>股票</th><th>賣出張數</th><th>賣出金額</th></tr></thead>
+          <tbody id="sellRows"><tr><td colspan="3" class="empty">資料讀取中</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    </section>
+
+    <section class="panel positions-panel">
+      <div class="panel-head"><div><h2>淨部位與成本</h2><p class="range-text">近 20 個交易日</p></div></div>
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>股票</th><th>買進</th><th>賣出</th><th>淨張數</th><th>淨資金</th><th>估算庫存</th><th>估算成本</th><th>收盤</th><th>報酬率</th></tr></thead>
-          <tbody id="rows"><tr><td colspan="9" class="empty">資料讀取中</td></tr></tbody>
+          <thead><tr><th>股票</th><th>淨張數</th><th>淨資金</th><th>估算庫存</th><th>估算成本</th><th>收盤</th><th>報酬率</th></tr></thead>
+          <tbody id="positionRows"><tr><td colspan="7" class="empty">資料讀取中</td></tr></tbody>
         </table>
       </div>
     </section>
