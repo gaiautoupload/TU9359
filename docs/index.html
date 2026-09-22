@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="華南永昌－中正 9359 上市櫃分點資金、建倉成本與報酬追蹤。">
+  <title>TU9359｜分點資金雷達</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">BROKER FLOW / 9359</p>
+        <h1>華南永昌－中正</h1>
+      </div>
+      <div class="freshness"><span></span><strong id="latest">讀取中</strong><small>最近交易日</small></div>
+    </header>
+
+    <section class="summary" aria-label="摘要">
+      <article><small>20 日主要建倉</small><strong id="leader">—</strong><span id="leaderFlow">—</span></article>
+      <article><small>觀察期庫存最高</small><strong id="inventoryLeader">—</strong><span id="inventoryLots">—</span></article>
+      <article><small>固定觀察</small><strong>京元電・聯電・合晶</strong><span>已知正例，不作績效保證</span></article>
+    </section>
+
+    <nav class="windows" aria-label="統計期間">
+      <button data-window="1">當日</button><button data-window="3">3 日</button><button data-window="5">5 日</button><button data-window="10">10 日</button><button class="active" data-window="20">20 日</button>
+    </nav>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>資金流排行榜</h2><p id="rangeText">近 20 個交易日</p></div>
+        <div class="legend"><span class="buy">買超</span><span class="sell">賣超</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>股票</th><th>買進</th><th>賣出</th><th>淨張數</th><th>淨資金</th><th>估算庫存</th><th>估算成本</th><th>收盤</th><th>報酬率</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="9" class="empty">資料讀取中</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <p class="note" id="note"></p>
+  </main>
+  <script src="assets/app.js"></script>
+</body>
+</html>

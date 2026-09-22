@@ -1,0 +1,12 @@
+const fmtMoney=n=>{const a=Math.abs(n);const v=a>=1e8?`${(a/1e8).toFixed(2)} 億`:a>=1e4?`${(a/1e4).toFixed(1)} 萬`:`${a.toLocaleString()} 元`;return `${n<0?"−":"+"}${v}`};
+const fmtNum=n=>Number(n||0).toLocaleString("zh-TW");
+const fmtPrice=n=>n==null?"—":Number(n).toFixed(2);
+let data,windowDays=20;
+function render(){
+  const key=`d${windowDays}`;
+  const stocks=[...data.stocks].sort((a,b)=>b[key].net_flow_twd-a[key].net_flow_twd);
+  document.querySelector("#rangeText").textContent=windowDays===1?"最近交易日":`近 ${windowDays} 個交易日`;
+  document.querySelector("#rows").innerHTML=stocks.map(s=>{const p=s[key];const cls=p.net_flow_twd>0?"positive":p.net_flow_twd<0?"negative":"muted";const ret=s.estimated_return_pct;return `<tr><td><div class="stock"><code>${s.stock_id}</code><strong>${s.stock_name}</strong>${s.is_seed?'<span class="seed">重點</span>':''}</div></td><td>${fmtNum(p.buy_lots)}</td><td>${fmtNum(p.sell_lots)}</td><td class="${p.net_lots>0?'positive':p.net_lots<0?'negative':'muted'}">${p.net_lots>0?'+':''}${fmtNum(p.net_lots)}</td><td class="${cls}">${fmtMoney(p.net_flow_twd)}</td><td>${fmtNum(s.estimated_inventory_lots)} 張</td><td>${fmtPrice(s.estimated_cost)}</td><td>${fmtPrice(s.latest_close)}</td><td class="${ret>0?'positive':ret<0?'negative':'muted'}">${ret==null?'—':`${ret>0?'+':''}${ret.toFixed(2)}%`}</td></tr>`}).join("");
+}
+fetch("data/dashboard.json").then(r=>{if(!r.ok)throw Error(r.status);return r.json()}).then(d=>{data=d;document.querySelector("#latest").textContent=d.latest_session;document.querySelector("#note").innerHTML=`<strong>估算限制：</strong>${d.method_note}　觀察起點：${d.observed_from}；產生時間：${new Date(d.generated_at).toLocaleString("zh-TW")}`;const leader=d.stocks[0];document.querySelector("#leader").textContent=`${leader.stock_id} ${leader.stock_name}`;document.querySelector("#leaderFlow").textContent=fmtMoney(leader.d20.net_flow_twd);const inv=[...d.stocks].sort((a,b)=>b.estimated_inventory_lots-a.estimated_inventory_lots)[0];document.querySelector("#inventoryLeader").textContent=`${inv.stock_id} ${inv.stock_name}`;document.querySelector("#inventoryLots").textContent=`${fmtNum(inv.estimated_inventory_lots)} 張｜成本 ${fmtPrice(inv.estimated_cost)}`;render()}).catch(()=>{document.querySelector("#rows").innerHTML='<tr><td colspan="9" class="empty">目前沒有可顯示的資料</td></tr>'});
+document.querySelectorAll(".windows button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".windows button").forEach(x=>x.classList.remove("active"));b.classList.add("active");windowDays=Number(b.dataset.window);render()}));
