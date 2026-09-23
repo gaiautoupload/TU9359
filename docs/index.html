@@ -18,14 +18,20 @@
     </header>
 
     <section class="summary" aria-label="摘要">
-      <article><small>區間淨買超第一</small><strong id="buyLeader">—</strong><span id="buyLeaderFlow">—</span></article>
-      <article><small>區間淨賣超第一</small><strong id="sellLeader">—</strong><span id="sellLeaderFlow">—</span></article>
+      <article><small>區間淨買張數第一</small><strong id="buyLeader">—</strong><span id="buyLeaderFlow">—</span></article>
+      <article><small>區間淨賣張數第一</small><strong id="sellLeader">—</strong><span id="sellLeaderFlow">—</span></article>
       <article><small>觀察期庫存最高</small><strong id="inventoryLeader">—</strong><span id="inventoryLots">—</span></article>
     </section>
 
     <nav class="windows" aria-label="統計期間">
-      <button data-window="1">當日</button><button data-window="3">3 日</button><button data-window="5">5 日</button><button data-window="10">10 日</button><button class="active" data-window="20">20 日</button>
+      <button type="button" data-window="1" aria-pressed="false">當日</button><button type="button" data-window="3" aria-pressed="false">3 日</button><button type="button" data-window="5" aria-pressed="false">5 日</button><button type="button" data-window="10" aria-pressed="false">10 日</button><button type="button" class="active" data-window="20" aria-pressed="true">20 日</button>
     </nav>
+    <div class="tools">
+      <label for="stockSearch">找股票</label>
+      <input id="stockSearch" type="search" placeholder="輸入代號或名稱" autocomplete="off" inputmode="search">
+      <button id="clearSearch" type="button" hidden>清除</button>
+      <span id="resultCount" role="status" aria-live="polite"></span>
+    </div>
 
     <section class="split-rankings">
     <section class="panel buy-panel">
