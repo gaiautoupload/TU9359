@@ -100,7 +100,10 @@ def update_history(prices: pd.DataFrame) -> pd.DataFrame:
         session.headers.update(HEADERS)
         for session_date in missing:
             print(f"fetch {session_date}")
-            rows.append(fetch_day(session, session_date))
+            fetched = fetch_day(session, session_date)
+            if fetched.empty:
+                raise RuntimeError(f"Broker source is not ready for {session_date}")
+            rows.append(fetched)
     history = pd.concat([old, *rows], ignore_index=True) if rows or not old.empty else pd.DataFrame()
     if history.empty:
         raise RuntimeError("No branch data available")

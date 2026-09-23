@@ -8,6 +8,16 @@
 python scripts/update_dashboard.py
 ```
 
+## Windows 平日排程
+
+安裝平日 17:30 的本機排程：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install_schedule.ps1
+```
+
+排程會執行 `update_scheduled.bat`。只有當日收盤價與 9359 分點資料都到齊、產出驗證通過且內容改變時，才會提交並推送 `main`；執行紀錄存放在 `logs\update_YYYYMMDD.log`。
+
 網站入口為 `docs/index.html`，產出資料為 `docs/data/dashboard.json`，逐日研究底稿保存在 `data/9359_daily_history.csv`。
 
 公開網站：<https://gaiautoupload.github.io/TU9359/>
