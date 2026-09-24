@@ -50,7 +50,8 @@ def record_site_result(status: str, note: str) -> None:
     marker = "\n## 事件用語"
     if marker not in content:
         raise RuntimeError(f"Update log has no insertion marker: {UPDATE_LOG}")
-    UPDATE_LOG.write_text(content.replace(marker, f"\n{entry}\n{marker}", 1), encoding="utf-8")
+    before, after = content.split(marker, 1)
+    UPDATE_LOG.write_text(before.rstrip("\r\n") + f"\n{entry}\n\n## 事件用語" + after, encoding="utf-8")
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
