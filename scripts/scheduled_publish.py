@@ -19,10 +19,38 @@ TRACKED_PATHS = ("data/9359_daily_history.csv", "docs/data/dashboard.json")
 PUBLIC_DATA_URL = "https://gaiautoupload.github.io/TU9359/data/dashboard.json"
 RETRY_MINUTES = 10
 LAST_RETRY_HOUR = 19
+SITE_NAME = "TU9359｜上市櫃分點資金雷達"
+REGISTRY = ROOT.parent / "WEBSITE_REGISTRY.md"
+UPDATE_LOG = ROOT.parent / "WEBSITE_UPDATE_LOG.md"
 
 
 class SourceNotReady(RuntimeError):
     pass
+
+
+def record_site_result(status: str, note: str) -> None:
+    stamp = datetime.now(TAIPEI).strftime("%Y-%m-%d %H:%M")
+    latest = json.loads(OUTPUT.read_text(encoding="utf-8"))["latest_session"] if OUTPUT.exists() else "待補"
+    lines = REGISTRY.read_text(encoding="utf-8").splitlines()
+    for index, line in enumerate(lines):
+        if line.startswith(f"| {SITE_NAME} |"):
+            columns = line.split("|")
+            columns[6] = f" {latest} "
+            if status == "完成":
+                columns[7] = f" {stamp} "
+            columns[8] = f" {'正常' if status == '完成' else '待檢查（更新失敗，詳見紀錄）'} "
+            lines[index] = "|".join(columns)
+            break
+    else:
+        raise RuntimeError(f"Site not found in {REGISTRY}")
+    REGISTRY.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    event = "資料更新／已推送／公開驗證" if status == "完成" else "更新失敗"
+    entry = f"| {stamp} | {SITE_NAME} | {event} | {latest} | {status} | 本機排程 | {note} |"
+    content = UPDATE_LOG.read_text(encoding="utf-8")
+    marker = "\n## 事件用語"
+    if marker not in content:
+        raise RuntimeError(f"Update log has no insertion marker: {UPDATE_LOG}")
+    UPDATE_LOG.write_text(content.replace(marker, f"\n{entry}\n{marker}", 1), encoding="utf-8")
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -83,6 +111,7 @@ def publish_and_verify(session_date: str) -> None:
             response.raise_for_status()
             if response.json().get("latest_session") == session_date:
                 print(f"VERIFIED PUBLIC: {session_date}", flush=True)
+                record_site_result("完成", f"公開資料已核對至 {session_date}；分點資料到齊後由本機 BAT 更新。")
                 return
         except (requests.RequestException, ValueError) as exc:
             print(f"Public check {attempt + 1}/20: {exc}", flush=True)
@@ -147,6 +176,7 @@ def run_with_retries() -> int:
             next_attempt = now + timedelta(minutes=RETRY_MINUTES)
             if next_attempt > cutoff:
                 print(f"FAILED: {exc}; retry window ended at {cutoff.isoformat()}", file=sys.stderr, flush=True)
+                record_site_result("失敗", f"資料至 {cutoff.strftime('%H:%M')} 仍未到齊：{exc}")
                 return 1
             print(f"WAIT: {exc}; next attempt at {next_attempt.isoformat(timespec='seconds')}", flush=True)
             time.sleep(RETRY_MINUTES * 60)
@@ -157,4 +187,8 @@ if __name__ == "__main__":
         raise SystemExit(run_with_retries())
     except Exception as exc:
         print(f"FAILED: {exc}", file=sys.stderr)
+        try:
+            record_site_result("失敗", str(exc).replace("|", "/"))
+        except Exception as log_exc:
+            print(f"FAILED to record site result: {log_exc}", file=sys.stderr)
         raise SystemExit(1)
