@@ -16,7 +16,7 @@ python scripts/update_dashboard.py
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install_schedule.ps1
 ```
 
-排程會執行 `update_scheduled.bat`。只有當日收盤價與 9359 分點資料都到齊、產出驗證通過且內容改變時，才會提交並推送 `main`；執行紀錄存放在 `logs\update_YYYYMMDD.log`。
+排程會執行 `update_scheduled.bat`。若 17:30 資料尚未到齊，會每 10 分鐘重試至 19:00；只有收盤價與 9359 分點資料都到齊、產出驗證通過時才推送 `main`，並確認公開 JSON 已更新。若本機已有當日資料但上次推送中斷，也會補推；執行紀錄存放在 `logs\update_YYYYMMDD.log`。
 
 網站入口為 `docs/index.html`，產出資料為 `docs/data/dashboard.json`，逐日研究底稿保存在 `data/9359_daily_history.csv`。
 

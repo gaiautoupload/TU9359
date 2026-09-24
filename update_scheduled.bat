@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
 set "PYTHONUTF8=1"
@@ -13,10 +13,10 @@ set "LOGFILE=%~dp0logs\update_%RUNDATE%.log"
 
 echo [%date% %time%] Start TU9359 scheduled update>>"%LOGFILE%"
 "%PYTHON_EXE%" -X utf8 "%~dp0scripts\scheduled_publish.py" >>"%LOGFILE%" 2>&1
-set "RESULT=%ERRORLEVEL%"
-if not "%RESULT%"=="0" (
-  echo [%date% %time%] FAILED with exit code %RESULT%>>"%LOGFILE%"
-  exit /b %RESULT%
+set "RESULT=!ERRORLEVEL!"
+if not "!RESULT!"=="0" (
+  echo [%date% %time%] FAILED with exit code !RESULT!>>"%LOGFILE%"
+  exit /b !RESULT!
 )
 
 echo [%date% %time%] Finished TU9359 scheduled update>>"%LOGFILE%"
