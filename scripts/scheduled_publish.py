@@ -12,6 +12,8 @@ import pandas as pd
 import requests
 
 from update_dashboard import HISTORY, OUTPUT, PRICE_FILE, ROOT, build_payload, update_history
+from archive_9359 import run as archive_rankings, connect as archive_connect
+from export_archive import main as export_rankings
 
 
 TAIPEI = ZoneInfo("Asia/Taipei")
@@ -129,6 +131,17 @@ def main() -> int:
 
     if session_date != today:
         raise SourceNotReady(f"Price source is not ready for {today}; latest={session_date}")
+
+    with archive_connect() as archive_db:
+        last_archived = archive_db.execute("SELECT max(day) FROM pages WHERE status='ok'").fetchone()[0]
+    archive_db.close()
+    archive_rankings(min(last_archived or session_date, session_date), session_date)
+    with archive_connect() as archive_db:
+        ready_modes = archive_db.execute("SELECT count(*) FROM pages WHERE day=? AND status='ok'", (session_date,)).fetchone()[0]
+    archive_db.close()
+    if ready_modes != 2:
+        raise SourceNotReady(f"Broker archive is not ready for {session_date}")
+    export_rankings()
 
     dirty = git("status", "--porcelain", "--", *TRACKED_PATHS).stdout.strip()
     if dirty:
