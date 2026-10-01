@@ -13,8 +13,10 @@ function render(){
   const query=document.querySelector("#stockSearch").value.trim().toLocaleLowerCase("zh-TW");
   const active=data.stocks.filter(s=>s[key].gross_buy_twd||s[key].gross_sell_twd);
   const visible=active.filter(s=>!query||`${s.stock_id} ${s.stock_name}`.toLocaleLowerCase("zh-TW").includes(query));
-  const buys=visible.filter(s=>s[key].net_lots>0).sort((a,b)=>b[key].net_lots-a[key].net_lots||b[key].net_flow_twd-a[key].net_flow_twd);
-  const sells=visible.filter(s=>s[key].net_lots<0).sort((a,b)=>a[key].net_lots-b[key].net_lots||a[key].net_flow_twd-b[key].net_flow_twd);
+  const buyOrder=(a,b)=>b[key].net_flow_twd-a[key].net_flow_twd||b[key].net_lots-a[key].net_lots;
+  const sellOrder=(a,b)=>a[key].net_flow_twd-b[key].net_flow_twd||a[key].net_lots-b[key].net_lots;
+  const buys=visible.filter(s=>s[key].net_lots>0).sort(buyOrder);
+  const sells=visible.filter(s=>s[key].net_lots<0).sort(sellOrder);
   const positions=[...visible].sort((a,b)=>b[key].net_flow_twd-a[key].net_flow_twd);
   document.querySelectorAll(".range-text").forEach(el=>el.textContent=windowDays===1?"最近交易日":`近 ${windowDays} 個交易日`);
   document.querySelector("#resultCount").textContent=`${visible.length} 檔符合條件｜淨買 ${buys.length}・淨賣 ${sells.length}`;
@@ -22,8 +24,8 @@ function render(){
   document.querySelector("#buyRows").innerHTML=buys.map(s=>{const p=s[key];return `<tr>${metricCell("股票",stockCell(s))}${metricCell("淨買張數",fmtNum(p.net_lots),"positive")}${metricCell("淨買金額",fmtSignedMoney(p.net_flow_twd),p.net_flow_twd>=0?"positive":"negative")}</tr>`}).join("")||'<tr><td colspan="3" class="empty">沒有符合條件的淨買超股票</td></tr>';
   document.querySelector("#sellRows").innerHTML=sells.map(s=>{const p=s[key];return `<tr>${metricCell("股票",stockCell(s))}${metricCell("淨賣張數",fmtNum(Math.abs(p.net_lots)),"negative")}${metricCell("淨賣金額",fmtSignedMoney(p.net_flow_twd),p.net_flow_twd<=0?"negative":"positive")}</tr>`}).join("")||'<tr><td colspan="3" class="empty">沒有符合條件的淨賣超股票</td></tr>';
   document.querySelector("#positionRows").innerHTML=positions.map(s=>{const p=s[key],ret=s.estimated_return_pct;return `<tr>${metricCell("股票",stockCell(s))}${metricCell("區間淨張數",`${p.net_lots>0?"+":""}${fmtNum(p.net_lots)}`,p.net_lots>0?"positive":p.net_lots<0?"negative":"muted")}${metricCell("區間淨資金",fmtSignedMoney(p.net_flow_twd),p.net_flow_twd>0?"positive":p.net_flow_twd<0?"negative":"muted")}${metricCell("估算庫存",`${fmtNum(s.estimated_inventory_lots)} 張`)}${metricCell("估算成本",fmtPrice(s.estimated_cost))}${metricCell("收盤價",fmtPrice(s.latest_close))}${metricCell("估算報酬",ret==null?"—":`${ret>0?"+":""}${ret.toFixed(2)}%`,ret>0?"positive":ret<0?"negative":"muted")}</tr>`}).join("")||'<tr><td colspan="7" class="empty">沒有符合條件的股票</td></tr>';
-  const topBuy=active.filter(s=>s[key].net_lots>0).sort((a,b)=>b[key].net_lots-a[key].net_lots)[0];
-  const topSell=active.filter(s=>s[key].net_lots<0).sort((a,b)=>a[key].net_lots-b[key].net_lots)[0];
+  const topBuy=active.filter(s=>s[key].net_lots>0).sort(buyOrder)[0];
+  const topSell=active.filter(s=>s[key].net_lots<0).sort(sellOrder)[0];
   document.querySelector("#buyLeader").textContent=topBuy?`${topBuy.stock_id} ${topBuy.stock_name}`:"—";
   document.querySelector("#buyLeaderFlow").textContent=topBuy?`${fmtNum(topBuy[key].net_lots)} 張｜${fmtSignedMoney(topBuy[key].net_flow_twd)}`:"—";
   document.querySelector("#sellLeader").textContent=topSell?`${topSell.stock_id} ${topSell.stock_name}`:"—";
