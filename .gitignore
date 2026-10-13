@@ -4,3 +4,4 @@ __pycache__/
 .tmp/
 logs/
 data/archive_9359/
+data/official_prices/

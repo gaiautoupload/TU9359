@@ -10,6 +10,8 @@ python scripts/update_dashboard.py
 
 ## Windows 平日排程
 
+TU9359 會核對證交所與櫃買中心的當日日期，將四碼證券收盤價保存於本機 `data/official_prices/` 並覆蓋同日舊值；歷史仍讀原價格檔，不依賴舊股價 BAT 當日成功。兩市場任一未就緒就重試，最後一次檢查會在 19:00 執行。
+
 安裝平日 17:30 的本機排程：
 
 ```powershell

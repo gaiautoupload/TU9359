@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from official_prices import load_prices
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -197,7 +198,7 @@ def build_payload(history: pd.DataFrame, prices: pd.DataFrame) -> dict:
 
 
 def main() -> None:
-    prices = pd.read_pickle(PRICE_FILE)
+    prices = load_prices(PRICE_FILE)
     prices.columns = prices.columns.astype(str)
     history = update_history(prices)
     payload = build_payload(history, prices)

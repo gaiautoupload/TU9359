@@ -14,6 +14,7 @@ import requests
 from update_dashboard import HISTORY, OUTPUT, PRICE_FILE, ROOT, build_payload, update_history
 from archive_9359 import run as archive_rankings, connect as archive_connect
 from export_archive import main as export_rankings
+from official_prices import ensure_prices
 
 
 TAIPEI = ZoneInfo("Asia/Taipei")
@@ -125,7 +126,10 @@ def publish_and_verify(session_date: str) -> None:
 def main() -> int:
     now = datetime.now(TAIPEI)
     today = now.date().isoformat()
-    prices = pd.read_pickle(PRICE_FILE)
+    try:
+        prices = ensure_prices(PRICE_FILE, today)
+    except (requests.RequestException, ValueError, KeyError) as exc:
+        raise SourceNotReady(f"Official price source is not ready for {today}: {exc}") from exc
     session_date = latest_price_session(prices)
     print(f"run_at={now.isoformat(timespec='seconds')} price_session={session_date}")
 
@@ -187,13 +191,13 @@ def run_with_retries() -> int:
         except SourceNotReady as exc:
             now = datetime.now(TAIPEI)
             cutoff = now.replace(hour=LAST_RETRY_HOUR, minute=0, second=0, microsecond=0)
-            next_attempt = now + timedelta(minutes=RETRY_MINUTES)
-            if next_attempt > cutoff:
+            if now >= cutoff:
                 print(f"FAILED: {exc}; retry window ended at {cutoff.isoformat()}", file=sys.stderr, flush=True)
                 record_site_result("失敗", f"資料至 {cutoff.strftime('%H:%M')} 仍未到齊：{exc}")
                 return 1
+            next_attempt = min(now + timedelta(minutes=RETRY_MINUTES), cutoff)
             print(f"WAIT: {exc}; next attempt at {next_attempt.isoformat(timespec='seconds')}", flush=True)
-            time.sleep(RETRY_MINUTES * 60)
+            time.sleep(max(0, (next_attempt - now).total_seconds()))
 
 
 if __name__ == "__main__":
